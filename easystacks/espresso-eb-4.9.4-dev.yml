@@ -1,0 +1,4 @@
+easyconfigs:
+  - ESPResSo-foss-2023b-software-commit.eb:
+      options:
+        software-commit: 4b9ccc4

@@ -12,7 +12,7 @@ sources = [
 {
     'source_urls': ['https://github.com/espressomd/espresso/archive/'],
     'filename': 'espresso-%(software_commit)s.gz',
-    'download_filename': '%(software_commit)s.tar.gz',
+    'download_filename': 'espresso-%(software_commit)s.tar.gz',
 },
 {
     'source_urls': ['https://i10git.cs.fau.de/api/v4/projects/walberla%2Fwalberla/repository/archive?sha=59c9b8b1#'],

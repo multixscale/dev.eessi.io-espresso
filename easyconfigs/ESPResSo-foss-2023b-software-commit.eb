@@ -11,8 +11,8 @@ hydrodynamics and reaction-diffusion-advection solvers."""
 sources = [
 {
     'source_urls': ['https://github.com/espressomd/espresso/archive/'],
-    'filename': 'espresso-%(software_commit)s.gz',
-    'download_filename': 'espresso-%(software_commit)s.tar.gz',
+    'filename': 'espresso-%(software_commit)s.tar.gz',
+    'download_filename': '%(software_commit)s.tar.gz',
 },
 {
     'source_urls': ['https://i10git.cs.fau.de/api/v4/projects/walberla%2Fwalberla/repository/archive?sha=59c9b8b1#'],
@@ -35,7 +35,7 @@ sources = [
 },
 {
     'source_urls': ['https://github.com/highfive-devs/highfive/archive/'],
-    'filename': '013467.tar.gz',
+    'filename': 'highfive-013467.tar.gz',
     'download_filename': '0103467.tar.gz',
 },
 ]

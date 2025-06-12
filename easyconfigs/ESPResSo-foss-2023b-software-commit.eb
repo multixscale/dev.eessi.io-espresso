@@ -25,7 +25,7 @@ sources = [
 },
 {
     'source_urls': ['https://github.com/kokkos/kokkos/archive/'],
-    'filename': 'kokkos-18b830e.tar.gz'
+    'filename': 'kokkos-18b830e.tar.gz',
     'download_filename': '18b830e.tar.gz',
 },
 {

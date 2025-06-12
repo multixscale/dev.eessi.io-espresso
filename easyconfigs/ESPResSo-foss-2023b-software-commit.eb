@@ -10,7 +10,7 @@ hydrodynamics and reaction-diffusion-advection solvers."""
 
 sources = [
 {
-    'source_urls': ['https://github.com/espressomd/espresso/archive/%(software_commit)s.tar.gz'],
+    'source_urls': ['https://github.com/espressomd/espresso/archive/'],
     'filename': 'espresso-%(software_commit)s.gz',
     'download_filename': '%(software_commit)s.tar.gz',
 },

@@ -1,7 +1,7 @@
 easyblock = 'EB_ESPResSo'
 
 name = 'ESPResSo'
-version = '4b9ccc4'
+version = '-%(software_commit)'
 
 homepage = 'https://espressomd.org/wordpress'
 description = """A software package for Molecular Dynamics and Monte Carlo
@@ -10,9 +10,9 @@ hydrodynamics and reaction-diffusion-advection solvers."""
 
 sources = [
 {
-    'source_urls': ['https://github.com/jngrad/espresso/archive/%(version)s.tar.gz'],
+    'source_urls': ['https://github.com/jngrad/espresso/archive/'],
     'filename': SOURCELOWER_TAR_GZ,
-    'download_filename': '%(version)s.tar.gz',
+    'download_filename': '%(software_commit)s.tar.gz',
 },
 {
     'source_urls': ['https://i10git.cs.fau.de/api/v4/projects/walberla%2Fwalberla/repository/archive?sha=59c9b8b1'],

@@ -1,7 +1,7 @@
 easyblock = 'EB_ESPResSo'
 
 name = 'ESPResSo'
-version = '-%(software_commit)'
+version = '-%(software_commit)s'
 
 homepage = 'https://espressomd.org/wordpress'
 description = """A software package for Molecular Dynamics and Monte Carlo

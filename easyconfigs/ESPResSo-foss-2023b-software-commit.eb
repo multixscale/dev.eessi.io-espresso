@@ -1,7 +1,7 @@
 easyblock = 'EB_ESPResSo'
 
 name = 'ESPResSo'
-version = '-%(software_commit)s'
+version = '%(software_commit)s'
 
 homepage = 'https://espressomd.org/wordpress'
 description = """A software package for Molecular Dynamics and Monte Carlo
@@ -11,7 +11,7 @@ hydrodynamics and reaction-diffusion-advection solvers."""
 sources = [
 {
     'source_urls': ['https://github.com/espressomd/espresso/archive/%(software_commit)s.tar.gz'],
-    'filename': SOURCELOWER_TAR_GZ,
+    'filename': 'espresso-%(software_commit)s.gz',
     'download_filename': '%(software_commit)s.tar.gz',
 },
 {
@@ -19,20 +19,24 @@ sources = [
     'filename': 'walberla-59c9b8b1.tar.gz',
 },
 {
-    'source_urls': ['https://github.com/icl-utk-edu/heffte/archive/v2.4.1.tar.gz'],
-    'filename': 'heffte-2.4.1.tar.gz',
+    'source_urls': ['https://github.com/icl-utk-edu/heffte/archive/'],
+    'filename': 'heffte-v2.4.1.tar.gz',
+    'download_filename': 'v2.4.1.tar.gz',
 },
 {
-    'source_urls': ['https://github.com/kokkos/kokkos/archive/18b830e.tar.gz'],
-    'filename': 'kokkos-18b830e.tar.gz',
+    'source_urls': ['https://github.com/kokkos/kokkos/archive/'],
+    'filename': 'kokkos-18b830e.tar.gz'
+    'download_filename': '18b830e.tar.gz',
 },
 {
-    'source_urls': ['https://github.com/ECP-copa/Cabana/archive/ebfaa51.tar.gz'],
+    'source_urls': ['https://github.com/ECP-copa/Cabana/archive/'],
     'filename': 'Cabana-ebfaa51.tar.gz',
+    'download_filename': 'ebfaa51.tar.gz',
 },
 {
-    'source_urls': ['https://github.com/highfive-devs/highfive/archive/0103467.tar.gz'],
-    'filename': 'highfive-0103467.tar.gz',
+    'source_urls': ['https://github.com/highfive-devs/highfive/archive/'],
+    'filename': '013467.tar.gz',
+    'download_filename': '0103467.tar.gz',
 },
 ]
 checksums = [{

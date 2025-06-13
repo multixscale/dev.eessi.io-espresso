@@ -80,7 +80,7 @@ if any(x[0] == 'CUDA' for x in dependencies):
 configopts = f' -DCMAKE_SKIP_RPATH=OFF -DESPRESSO_BUILD_TESTS=ON'
 # make sure the right Python is used (note: -DPython3_EXECUTABLE or -DPython_EXECUTABLE does not work!)
 configopts += ' -D PYTHON_EXECUTABLE=$EBROOTPYTHON/bin/python '
-configopts += ' -D -DCMAKE_INSTALL_LIBDIR:PATH=lib '
+configopts += ' -DCMAKE_INSTALL_LIBDIR:PATH=lib '
 
 test_cmd = 'ninja'
 runtest = f'check_unit_tests && {test_cmd} check_python'

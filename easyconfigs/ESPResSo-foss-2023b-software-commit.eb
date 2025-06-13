@@ -20,13 +20,13 @@ sources = [
 },
 {
     'source_urls': ['https://github.com/icl-utk-edu/heffte/archive/'],
-    'filename': 'heffte-v2.4.1.tar.gz',
+    'filename': 'heffte-2.4.1.tar.gz',
     'download_filename': 'v2.4.1.tar.gz',
 },
 {
     'source_urls': ['https://github.com/kokkos/kokkos/archive/'],
-    'filename': 'kokkos-18b830e.tar.gz',
-    'download_filename': '18b830e.tar.gz',
+    'filename': 'kokkos-18b830e3360dff9f44a9a9c729ca9e74c037e354.tar.gz',
+    'download_filename': '18b830e3360dff9f44a9a9c729ca9e74c037e354.tar.gz',
 },
 {
     'source_urls': ['https://github.com/ECP-copa/Cabana/archive/'],
@@ -35,7 +35,7 @@ sources = [
 },
 {
     'source_urls': ['https://github.com/highfive-devs/highfive/archive/'],
-    'filename': 'highfive-013467.tar.gz',
+    'filename': 'highfive-0103467c3b609628fe3b892c6a85915610f2f3d2.tar.gz',
     'download_filename': '0103467.tar.gz',
 },
 ]

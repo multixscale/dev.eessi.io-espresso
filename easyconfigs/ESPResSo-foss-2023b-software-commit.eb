@@ -19,6 +19,11 @@ sources = [
     'filename': 'walberla-59c9b8b1.tar.gz',
 },
 {
+    'source_urls': ['https://github.com/icl-utk-edu/heffte/archive/'],
+    'filename': 'heffte-2.4.1.tar.gz',
+    'download_filename': 'v2.4.1.tar.gz',
+},
+{
     'source_urls': ['https://github.com/kokkos/kokkos/archive/'],
     'filename': 'kokkos-18b830e3360dff9f44a9a9c729ca9e74c037e354.tar.gz',
     'download_filename': '18b830e3360dff9f44a9a9c729ca9e74c037e354.tar.gz',
@@ -37,6 +42,7 @@ sources = [
 checksums = [{
   'espresso-%(software_commit)s.tar.gz': 'b793099648c92f8b1241c90a4ec51b8e69f5408e8dcd3b97b9a8b188141bbe87',
   'walberla-59c9b8b1.tar.gz': 'a709d7299f2c06143946d9bb8033d4ddbb0cf8b9142e4bbaa15fecc78463038f',
+  'heffte-2.4.1.tar.gz': 'de2cf26df5d61baac7841525db3f393cb007f79612ac7534fd4757f154ba3e6c',
   'kokkos-18b830e.tar.gz': 'dc0127134f47752f61e74c77237bd9ec560535c4283fef8c9643f947b3733063',
   'Cabana-ebfaa51.tar.gz': 'fe5b1b1d419662b29a80cbd6703994b28c942ccbee3b201eca87e48a13836350',
   'highfive-0103467.tar.gz': 'd0ce87abd07cdd676c6d6069d3b05f869138d115d8e22b935c9bd43c872c1f3d',
@@ -62,7 +68,6 @@ dependencies = [
     ('IPython', '8.17.2'),
     ('Pint', '0.24'),
     ('HDF5', '1.14.3'),
-    ('HeFFTe', '2.4.1'),
     #('VTK', '9.3.0'), # error: libpython3.10.so.1.0: file not found
     #('PFFT', '20181230'), # not available in this toolchain
     #('CUDA', '12.1.1', '', SYSTEM), # deferred for now
@@ -94,6 +99,8 @@ _libs = [
     'libwalberla_boundary', 'liblodepng',
     # Kokkos
     'libkokkoscontainers', 'libkokkoscore', 'libkokkossimd',
+    # heFFte
+    'libheffte',
 ]
 _python_modules = [
     '__init__.py', 'system.py', 'version.py', 'collision_detection.py', 'lb.py',

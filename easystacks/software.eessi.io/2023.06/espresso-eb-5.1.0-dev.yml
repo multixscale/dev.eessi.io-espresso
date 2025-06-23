@@ -3,3 +3,4 @@ easyconfigs:
       options:
         software-commit: 4b9ccc45713137eb16e5f19e5a313b5342080c75
         include-easyblocks: easyconfigs/*/*/*.py
+  - HeFFTe-2.4.1-foss-2023b.eb

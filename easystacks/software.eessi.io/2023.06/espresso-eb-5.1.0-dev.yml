@@ -1,5 +1,5 @@
 easyconfigs:
   - ESPResSo-foss-2023b-software-commit.eb:
       options:
-        software-commit: 4b9ccc45713137eb16e5f19e5a313b5342080c75
+        software-commit: e97c57315773969797d74ed6adfc17c78c98ab67
         include-easyblocks: easyconfigs/*/*/*.py

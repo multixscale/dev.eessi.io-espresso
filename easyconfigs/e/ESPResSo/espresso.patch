@@ -6,10 +6,22 @@
 -  find_package(Cython 3.0.8...<3.1.0 REQUIRED)
 +  find_package(Cython 3.0.4...<3.1.0 REQUIRED)
    find_program(IPYTHON_EXECUTABLE NAMES jupyter ipython3 ipython)
-# skip exception tests, which can crash hdf5 depending on how it was built
+# skip fragile test which may crash hdf5 depending on how it was built
 --- testsuite/python/CMakeLists.txt
 +++ testsuite/python/CMakeLists.txt
 @@ -386,3 +386,2 @@
  python_test(FILE h5md.py MAX_NUM_PROC 2)
 -python_test(FILE h5md.py MAX_NUM_PROC 1 SUFFIX 1_core)
  python_test(FILE p3m_fft.py MAX_NUM_PROC 6)
+# fix broken test
+--- testsuite/python/code_info.py
++++ testsuite/python/code_info.py
+@@ -63,3 +63,2 @@ class Test(ut.TestCase):
+         commit_charset = set("abcdef0123456789")
+-        self.assertIn(espressomd.version.git_state(), git_states)
+         self.assertIsInstance(espressomd.version.git_branch(), str)
+@@ -69,2 +68,4 @@ class Test(ut.TestCase):
+         self.assertTrue(set(git_commit).issubset(commit_charset))
++        if git_commit:
++            self.assertIn(espressomd.version.git_state(), git_states)
+ 

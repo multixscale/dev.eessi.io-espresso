@@ -81,6 +81,10 @@ configopts = f' -DCMAKE_SKIP_RPATH=OFF -DESPRESSO_BUILD_TESTS=ON'
 # make sure the right Python is used (note: -DPython3_EXECUTABLE or -DPython_EXECUTABLE does not work!)
 configopts += ' -D PYTHON_EXECUTABLE=$EBROOTPYTHON/bin/python '
 configopts += ' -DCMAKE_INSTALL_LIBDIR:PATH=lib '
+# workaround for https://gitlab.kitware.com/cmake/cmake/-/issues/22678
+# (this only affects testsuite executable files in the build folder)
+_exe_linker_flags = ':'.join(f'%(builddir)s/easybuild_obj/_deps/{path}' for path in ['kokkos-build/containers/src', 'kokkos-build/core/src', 'kokkos-build/simd/src', 'heffte-build'])
+configopts += f' -DCMAKE_EXE_LINKER_FLAGS="-Wl,-rpath-link,{_exe_linker_flags}" '
 
 test_cmd = 'ninja'
 runtest = f'check_unit_tests && {test_cmd} check_python'

@@ -83,7 +83,11 @@ configopts += ' -D PYTHON_EXECUTABLE=$EBROOTPYTHON/bin/python '
 configopts += ' -DCMAKE_INSTALL_LIBDIR:PATH=lib '
 # workaround for https://gitlab.kitware.com/cmake/cmake/-/issues/22678
 # (this only affects testsuite executable files in the build folder)
-_exe_linker_flags = ':'.join(f'%(builddir)s/easybuild_obj/_deps/{path}' for path in ['kokkos-build/containers/src', 'kokkos-build/core/src', 'kokkos-build/simd/src', 'heffte-build'])
+_exe_linker_flags = ':'.join(f'%(builddir)s/easybuild_obj/_deps/{path}'
+                             for path in ['kokkos-build/containers/src',
+                                          'kokkos-build/core/src',
+                                          'kokkos-build/simd/src',
+                                          'heffte-build'])
 configopts += f' -DCMAKE_EXE_LINKER_FLAGS="-Wl,-rpath-link,{_exe_linker_flags}" '
 
 test_cmd = 'ninja'

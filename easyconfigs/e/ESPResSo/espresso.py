@@ -23,9 +23,12 @@ EasyBuild support for ESPResSo, implemented as an easyblock.
 
 import os
 import re
+import shutil
 from easybuild.easyblocks.generic.cmakeninja import CMakeNinja
 from easybuild.tools.systemtools import get_cpu_architecture, get_cpu_features
 from easybuild.tools.systemtools import X86_64
+from easybuild.tools.utilities import trace_msg
+from easybuild.tools.build_log import print_error
 
 
 class EB_ESPResSo(CMakeNinja):
@@ -108,3 +111,39 @@ class EB_ESPResSo(CMakeNinja):
         self.cfg['configopts'] = configopts
 
         return super(EB_ESPResSo, self).configure_step()
+
+    def _cleanup_aux_files(self):
+        """
+        Remove files automatically installed by CMake outside the ESPResSo
+        main directory: header files, config files, duplicated shared objects.
+        """
+        def delete_dir(path, create_empty_dir=True):
+            if os.path.isdir(path):
+                trace_msg(f'removing directory \'%s\'' % path.replace(f'{self.installdir}/', ''))
+                shutil.rmtree(path)
+            if create_empty_dir:
+                trace_msg(f'creating empty directory \'%s\'' % path.replace(f'{self.installdir}/', ''))
+                os.makedirs(path)
+
+        def delete_file(path):
+            if os.path.isfile(path) or os.path.islink(path):
+                trace_msg(f'removing file \'%s\'' % path.replace(f'{self.installdir}/', ''))
+                os.remove(path)
+
+        lib_dir = f'{self.installdir}/lib'
+        if os.path.isdir(f'{self.installdir}/lib64'):
+            lib_dir = f'{self.installdir}/lib64'
+        delete_dir(f'{self.installdir}/include')
+        delete_dir(f'{self.installdir}/share')
+        delete_dir(f'{self.installdir}/walberla', False)
+        delete_dir(f'{lib_dir}/cmake', False)
+        for path in os.listdir(lib_dir):
+            if '.so' in path:
+                delete_file(f'{lib_dir}/{path}')
+
+    def post_processing_step(self):
+        try:
+            self._cleanup_aux_files()
+        except Exception as err:
+            print_error("Failed to remove some auxiliary files (easyblock: %s): %s" % (self.__class__.__name__, str(err)))
+        return super(EB_ESPResSo, self).post_processing_step()

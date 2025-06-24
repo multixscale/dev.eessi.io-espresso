@@ -85,9 +85,6 @@ class EB_ESPResSo(CMakeNinja):
 
         configopts = self.cfg.get('configopts', '')
         dependencies = self.cfg.get('dependencies', [])
-        max_parallel = self.cfg.get('max_parallel') or self.cfg.get('parallel')
-        if max_parallel is None:
-            max_parallel = os.cpu_count()
 
         cpu_features = get_cpu_features()
         with_cuda = any(x.get('name', '') == 'CUDA' for x in dependencies)
@@ -118,11 +115,6 @@ class EB_ESPResSo(CMakeNinja):
 
         configopts += ' -DESPRESSO_BUILD_WITH_SHARED_MEMORY_PARALLELISM=ON'
         configopts += ' -DESPRESSO_BUILD_WITH_FFTW=ON'
-
-        # The ESPResSo testsuite oversubscribes OpenMP threads. A small
-        # number of CPU cores must be left unallocated to avoid timeouts.
-        ctest_parallel = max(1, max_parallel // 2)
-        configopts += f' -DESPRESSO_CTEST_ARGS=-j{ctest_parallel}'
 
         self.cfg['configopts'] = configopts
 

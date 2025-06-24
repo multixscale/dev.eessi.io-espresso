@@ -77,7 +77,7 @@ dependencies = [
 if any(x[0] == 'CUDA' for x in dependencies):
     cuda_compute_capabilities = ['5.2', '6.0', '7.0', '7.5', '8.0', '8.6', '9.0']
 
-configopts = f' -DCMAKE_SKIP_RPATH=OFF -DESPRESSO_BUILD_TESTS=ON'
+configopts = f' -DESPRESSO_BUILD_TESTS=ON '
 # make sure the right Python is used (note: -DPython3_EXECUTABLE or -DPython_EXECUTABLE does not work!)
 configopts += ' -D PYTHON_EXECUTABLE=$EBROOTPYTHON/bin/python '
 configopts += ' -DCMAKE_INSTALL_LIBDIR:PATH=lib '
@@ -93,7 +93,7 @@ configopts += f' -DCMAKE_EXE_LINKER_FLAGS="-Wl,-rpath-link,{_exe_linker_flags}" 
 test_cmd = 'ninja'
 runtest = f'check_unit_tests && {test_cmd} check_python'
 
-modextrapaths = {'PYTHONPATH': ['lib64/python%(pyshortver)s/site-packages']}
+modextrapaths = {'PYTHONPATH': ['lib/python%(pyshortver)s/site-packages']}
 
 _binaries = ['ipypresso',  'pypresso']
 _libs = [
@@ -125,7 +125,7 @@ if any(x[0] == 'CUDA' for x in dependencies):
     ]
     _python_modules.append('cuda_init.py')
 
-_lib_path = 'lib64/python%(pyshortver)s/site-packages/espressomd'
+_lib_path = 'lib/python%(pyshortver)s/site-packages/espressomd'
 sanity_check_paths = {
     'files': [f'bin/{x}' for x in _binaries] +
              [f'{_lib_path}/{x}.{SHLIB_EXT}' for x in _libs] +

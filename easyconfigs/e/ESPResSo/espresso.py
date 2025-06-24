@@ -35,6 +35,9 @@ class EB_ESPResSo(CMakeNinja):
     """Support for building and installing ESPResSo."""
 
     def _get_extracted_tarball_paths(self):
+        """
+        Locate the source code of all dependencies.
+        """
         extracted_paths = {}
         for src in self.src:
             name = src['name'].split('-', 1)[0]
@@ -55,7 +58,13 @@ class EB_ESPResSo(CMakeNinja):
             extracted_paths[name] = os.path.join(src['finalpath'], matches[0])
         return extracted_paths
 
-    def _patch_fetchcontent(self, extracted_paths):
+    def _patch_fetchcontent(self):
+        """
+        Modify CMake ``FetchContent_Declare`` blocks to point to the folders
+        containing the already-downloaded dependencies rather than to URLs.
+        This avoids a download step during configuration.
+        """
+        extracted_paths = self._get_extracted_tarball_paths()
         cmakelists_path = os.path.join(extracted_paths['espresso'], 'CMakeLists.txt')
         with open(cmakelists_path, 'r') as f:
             content = f.read()
@@ -71,9 +80,8 @@ class EB_ESPResSo(CMakeNinja):
             f.write(content)
 
     def configure_step(self):
-        # patch FetchContent to avoid downloading dependencies
-        extracted_paths = self._get_extracted_tarball_paths()
-        self._patch_fetchcontent(extracted_paths)
+        # patch FetchContent to avoid re-downloading dependencies
+        self._patch_fetchcontent()
 
         configopts = self.cfg.get('configopts', '')
         dependencies = self.cfg.get('dependencies', [])
@@ -117,13 +125,10 @@ class EB_ESPResSo(CMakeNinja):
         Remove files automatically installed by CMake outside the ESPResSo
         main directory: header files, config files, duplicated shared objects.
         """
-        def delete_dir(path, create_empty_dir=True):
+        def delete_dir(path):
             if os.path.isdir(path):
                 trace_msg(f'removing directory \'%s\'' % path.replace(f'{self.installdir}/', ''))
                 shutil.rmtree(path)
-            if create_empty_dir:
-                trace_msg(f'creating empty directory \'%s\'' % path.replace(f'{self.installdir}/', ''))
-                os.makedirs(path)
 
         def delete_file(path):
             if os.path.isfile(path) or os.path.islink(path):
@@ -135,8 +140,8 @@ class EB_ESPResSo(CMakeNinja):
             lib_dir = f'{self.installdir}/lib64'
         delete_dir(f'{self.installdir}/include')
         delete_dir(f'{self.installdir}/share')
-        delete_dir(f'{self.installdir}/walberla', False)
-        delete_dir(f'{lib_dir}/cmake', False)
+        delete_dir(f'{self.installdir}/walberla')
+        delete_dir(f'{lib_dir}/cmake')
         for path in os.listdir(lib_dir):
             if '.so' in path:
                 delete_file(f'{lib_dir}/{path}')

@@ -119,9 +119,9 @@ class EB_ESPResSo(CMakeNinja):
         configopts += ' -DESPRESSO_BUILD_WITH_SHARED_MEMORY_PARALLELISM=ON'
         configopts += ' -DESPRESSO_BUILD_WITH_FFTW=ON'
 
-        # the ESPResSo testsuite oversubscribes OpenMP threads, thus a small
-        # number of CPU cores must be left unallocated to avoid timeouts
-        ctest_parallel = max(1, max_parallel * 3 // 4)
+        # The ESPResSo testsuite oversubscribes OpenMP threads. A small
+        # number of CPU cores must be left unallocated to avoid timeouts.
+        ctest_parallel = max(1, max_parallel // 2)
         configopts += f' -DESPRESSO_CTEST_ARGS=-j{ctest_parallel}'
 
         self.cfg['configopts'] = configopts

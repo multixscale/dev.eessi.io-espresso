@@ -1,5 +1,5 @@
 easyconfigs:
   - ESPResSo-foss-2023b-software-commit.eb:
       options:
-        software-commit: e97c57315773969797d74ed6adfc17c78c98ab67
+        software-commit: 8aa60cecd56cdd10ab62042c567552f347374f36 # waLBerla coupling and OpenMP support
         include-easyblocks: easyconfigs/*/*/*.py

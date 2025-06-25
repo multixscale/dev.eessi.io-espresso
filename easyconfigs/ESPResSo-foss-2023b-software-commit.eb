@@ -1,0 +1,142 @@
+easyblock = 'EB_ESPResSo'
+
+name = 'ESPResSo'
+version = '%(software_commit)s'
+
+homepage = 'https://espressomd.org/wordpress'
+description = """A software package for Molecular Dynamics and Monte Carlo
+simulations of bead-spring models, with electrostatics, magnetostatics,
+hydrodynamics and reaction-diffusion-advection solvers."""
+
+sources = [
+{
+    'source_urls': ['https://github.com/espressomd/espresso/archive/'],
+    'filename': 'espresso-%(software_commit)s.tar.gz',
+    'download_filename': '%(software_commit)s.tar.gz',
+},
+{
+    'source_urls': ['https://i10git.cs.fau.de/api/v4/projects/walberla%2Fwalberla/repository/archive?sha=59c9b8b1#'],
+    'filename': 'walberla-59c9b8b1.tar.gz',
+},
+{
+    'source_urls': ['https://github.com/icl-utk-edu/heffte/archive/'],
+    'filename': 'heffte-2.4.1.tar.gz',
+    'download_filename': 'v2.4.1.tar.gz',
+},
+{
+    'source_urls': ['https://github.com/kokkos/kokkos/archive/'],
+    'filename': 'kokkos-18b830e3360dff9f44a9a9c729ca9e74c037e354.tar.gz',
+    'download_filename': '18b830e3360dff9f44a9a9c729ca9e74c037e354.tar.gz',
+},
+{
+    'source_urls': ['https://github.com/ECP-copa/Cabana/archive/'],
+    'filename': 'Cabana-ebfaa51.tar.gz',
+    'download_filename': 'ebfaa51.tar.gz',
+},
+{
+    'source_urls': ['https://github.com/highfive-devs/highfive/archive/'],
+    'filename': 'highfive-0103467c3b609628fe3b892c6a85915610f2f3d2.tar.gz',
+    'download_filename': '0103467.tar.gz',
+},
+]
+checksums = [{
+  'espresso-%(software_commit)s.tar.gz': '73d71511eca932adcff4f33ac778c77279e97cec91ea1ac53987ba488fc1288d',
+  'walberla-59c9b8b1.tar.gz': 'a709d7299f2c06143946d9bb8033d4ddbb0cf8b9142e4bbaa15fecc78463038f',
+  'heffte-2.4.1.tar.gz': 'de2cf26df5d61baac7841525db3f393cb007f79612ac7534fd4757f154ba3e6c',
+  'kokkos-18b830e.tar.gz': 'dc0127134f47752f61e74c77237bd9ec560535c4283fef8c9643f947b3733063',
+  'Cabana-ebfaa51.tar.gz': 'fe5b1b1d419662b29a80cbd6703994b28c942ccbee3b201eca87e48a13836350',
+  'highfive-0103467.tar.gz': 'd0ce87abd07cdd676c6d6069d3b05f869138d115d8e22b935c9bd43c872c1f3d',
+}]
+patches = [
+  'espresso.patch',
+]
+
+toolchain = {'name': 'foss', 'version': '2023b'}
+toolchainopts = {'usempi': True, 'pic': True}
+
+builddependencies = [
+    ('CMake', '3.27.6'),
+    ('Ninja', '1.11.1'),
+]
+
+dependencies = [
+    ('Python', '3.11.5'),
+    ('SciPy-bundle', '2023.11'),
+    ('Boost.MPI', '1.83.0'),
+    ('Mesa', '23.1.9'),
+    ('GSL', '2.7'),
+    ('IPython', '8.17.2'),
+    ('Pint', '0.24'),
+    ('HDF5', '1.14.3'),
+    #('VTK', '9.3.0'), # error: libpython3.10.so.1.0: file not found
+    #('PFFT', '20181230'), # not available in this toolchain
+    #('CUDA', '12.1.1', '', SYSTEM), # deferred for now
+]
+
+# default CUDA compute capabilities to use (override via --cuda-compute-capabilities)
+if any(x[0] == 'CUDA' for x in dependencies):
+    cuda_compute_capabilities = ['5.2', '6.0', '7.0', '7.5', '8.0', '8.6', '9.0']
+
+configopts = f' -DESPRESSO_BUILD_TESTS=ON '
+# make sure the right Python is used (note: -DPython3_EXECUTABLE or -DPython_EXECUTABLE does not work!)
+configopts += ' -D PYTHON_EXECUTABLE=$EBROOTPYTHON/bin/python '
+configopts += ' -DCMAKE_INSTALL_LIBDIR:PATH=lib '
+# workaround for https://gitlab.kitware.com/cmake/cmake/-/issues/22678
+# (this only affects testsuite executable files in the build folder)
+_exe_linker_flags = ':'.join(f'%(builddir)s/easybuild_obj/_deps/{path}'
+                             for path in ['kokkos-build/containers/src',
+                                          'kokkos-build/core/src',
+                                          'kokkos-build/simd/src',
+                                          'heffte-build'])
+configopts += f' -DCMAKE_EXE_LINKER_FLAGS="-Wl,-rpath-link,{_exe_linker_flags}" '
+
+test_cmd = 'ninja'
+runtest = f'check_unit_tests && {test_cmd} check_python'
+
+modextrapaths = {'PYTHONPATH': ['lib/python%(pyshortver)s/site-packages']}
+
+_binaries = ['ipypresso',  'pypresso']
+_libs = [
+    # ESPResSo
+    'espresso_core', 'espresso_shapes', 'espresso_walberla',
+    'espresso_script_interface', 'script_interface', 'utils', '_init',
+    # waLBerla
+    'libwalberla_core', 'libwalberla_executiontree', 'libwalberla_timeloop',
+    'libwalberla_field', 'libwalberla_blockforest', 'libwalberla_geometry',
+    'libwalberla_lbm', 'libwalberla_vtk', 'libwalberla_domain_decomposition',
+    'libwalberla_boundary', 'liblodepng',
+    # Kokkos
+    'libkokkoscontainers', 'libkokkoscore', 'libkokkossimd',
+    # heFFte
+    'libheffte',
+]
+_python_modules = [
+    '__init__.py', 'system.py', 'version.py', 'collision_detection.py', 'lb.py',
+    'accumulators.py', 'constraints.py', 'observables.py', 'particle_data.py',
+]
+if any(x[0] == 'PFFT' for x in dependencies):
+    _libs.append('libwalberla_fft')
+if any(x[0] == 'HDF5' for x in dependencies):
+    _libs.append('espresso_hdf5')
+    _python_modules.append('io/writer/h5md.py')
+if any(x[0] == 'CUDA' for x in dependencies):
+    _libs += [
+        'espresso_cuda', 'espresso_walberla_cuda', 'libwalberla_gpu',
+    ]
+    _python_modules.append('cuda_init.py')
+
+_lib_path = 'lib/python%(pyshortver)s/site-packages/espressomd'
+sanity_check_paths = {
+    'files': [f'bin/{x}' for x in _binaries] +
+             [f'{_lib_path}/{x}.{SHLIB_EXT}' for x in _libs] +
+             [f'{_lib_path}/{x}' for x in _python_modules],
+    'dirs': ['bin', 'lib']
+}
+
+sanity_check_commands = [
+    'pypresso -h', 'ipypresso -h',
+    'pypresso -c "import espressomd.version;print(espressomd.version.friendly())"',
+    'python3 -c "import espressomd.version;print(espressomd.version.friendly())"',
+]
+
+moduleclass = 'chem'

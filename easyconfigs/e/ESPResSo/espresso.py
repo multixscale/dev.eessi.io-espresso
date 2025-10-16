@@ -29,6 +29,7 @@ from easybuild.tools.systemtools import get_cpu_architecture, get_cpu_features
 from easybuild.tools.systemtools import X86_64
 from easybuild.tools.utilities import trace_msg
 from easybuild.tools.build_log import print_error
+from easybuild.tools import environment as env
 
 
 class EB_ESPResSo(CMakeNinja):
@@ -88,7 +89,6 @@ class EB_ESPResSo(CMakeNinja):
 
         cpu_features = get_cpu_features()
         with_cuda = any(x.get('name', '') == 'CUDA' for x in dependencies)
-        with_pfft = any(x.get('name', '') == 'PFFT' for x in dependencies)
         with_hdf5 = any(x.get('name', '') == 'HDF5' for x in dependencies)
         with_gsl = any(x.get('name', '') == 'GSL' for x in dependencies)
 
@@ -106,19 +106,21 @@ class EB_ESPResSo(CMakeNinja):
             configopts += ' -DESPRESSO_BUILD_WITH_GSL=OFF'
 
         configopts += ' -DESPRESSO_BUILD_WITH_WALBERLA=ON'
-        if with_pfft:
-            configopts += ' -DESPRESSO_BUILD_WITH_WALBERLA_FFT=ON'
-        else:
-            configopts += ' -DESPRESSO_BUILD_WITH_WALBERLA_FFT=OFF'
         if get_cpu_architecture() == X86_64 and 'avx2' in cpu_features:
             configopts += ' -DESPRESSO_BUILD_WITH_WALBERLA_AVX=ON'
 
-        configopts += ' -DESPRESSO_BUILD_WITH_SHARED_MEMORY_PARALLELISM=ON'
+        configopts += ' -DESPRESSO_BUILD_WITH_SHARED_MEMORY_PARALLELISM=OFF'
         configopts += ' -DESPRESSO_BUILD_WITH_FFTW=ON'
 
         self.cfg['configopts'] = configopts
 
         return super(EB_ESPResSo, self).configure_step()
+
+    def test_step(self):
+        testopts = self.cfg.get('testopts', '')
+        self.cfg['testopts'] = f'{testopts} -j{self.cfg.parallel}'
+
+        return super(EB_ESPResSo, self).test_step()
 
     def _cleanup_aux_files(self):
         """

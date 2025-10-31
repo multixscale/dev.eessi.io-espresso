@@ -35,7 +35,7 @@ sources = [
 },
 ]
 checksums = [{
-  'espresso-%(software_commit)s.tar.gz': '571ad31186d5304cef6799cb82024376e693947ca2d6f49dfbd72d92b66f16a1',
+  'espresso-%(software_commit)s.tar.gz': '97ed075153bfa7bd6c2536ef5f194c6b85dc1a3fff99d144b31cc9dec883347e',
   'walberla-fc081850.tar.gz': '686c8f26e225971ae5beed6f25ada7536bfacb96db11f2ff9cce6f267fc7f8ea',
   'kokkos-18b830e.tar.gz': 'dc0127134f47752f61e74c77237bd9ec560535c4283fef8c9643f947b3733063',
   'Cabana-ebfaa51.tar.gz': 'fe5b1b1d419662b29a80cbd6703994b28c942ccbee3b201eca87e48a13836350',
@@ -48,6 +48,7 @@ toolchainopts = {'usempi': True, 'pic': True}
 builddependencies = [
     ('CMake', '3.27.6'),
     ('Ninja', '1.11.1'),
+    ('Cython', '3.0.10'),
 ]
 
 dependencies = [
@@ -70,7 +71,7 @@ if any(x[0] == 'CUDA' for x in dependencies):
 
 configopts = f' -DESPRESSO_BUILD_TESTS=ON '
 # make sure the right Python is used (note: -DPython3_EXECUTABLE or -DPython_EXECUTABLE does not work!)
-configopts += ' -D PYTHON_EXECUTABLE=$EBROOTPYTHON/bin/python '
+configopts += ' -DPYTHON_EXECUTABLE=$EBROOTPYTHON/bin/python '
 configopts += ' -DCMAKE_INSTALL_LIBDIR:PATH=lib '
 # workaround for https://gitlab.kitware.com/cmake/cmake/-/issues/22678
 # (this only affects testsuite executable files in the build folder)

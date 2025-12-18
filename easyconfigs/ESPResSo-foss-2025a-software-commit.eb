@@ -61,7 +61,7 @@ if any(x[0] == 'HDF5' for x in dependencies):
         },
     ]
 checksums = [{
-  'espresso-%(software_commit)s.tar.gz': 'b0f816ba9ec7422beb716b624af205c8ae780642a5b8c8e3d0fbe3214860590d',
+  'espresso-%(software_commit)s.tar.gz': '14985c4e2e65912bb29a900cdee937a0150d860f40f8d8a725789d649b3fd6fd',
   'walberla-fc081850.tar.gz': '686c8f26e225971ae5beed6f25ada7536bfacb96db11f2ff9cce6f267fc7f8ea',
   'kokkos-18b830e.tar.gz': 'dc0127134f47752f61e74c77237bd9ec560535c4283fef8c9643f947b3733063',
   'Cabana-e76c1a1.tar.gz': '20dbd352fe1da744a312e556730287f52a205d1e767ac45557a3998b7fc80ca7',

@@ -8,27 +8,27 @@ description = """A software package for Molecular Dynamics and Monte Carlo
 simulations of bead-spring models, with electrostatics, magnetostatics,
 hydrodynamics and reaction-diffusion-advection solvers."""
 
-toolchain = {'name': 'foss', 'version': '2023b'}
+toolchain = {'name': 'foss', 'version': '2025a'}
 toolchainopts = {'usempi': True, 'pic': True}
 
 builddependencies = [
-    ('CMake', '3.27.6'),
-    ('Ninja', '1.11.1'),
-    ('Cython', '3.0.10'),
+    ('CMake', '3.31.3'),
+    ('Ninja', '1.12.1'),
+    ('Cython', '3.1.1'),
 ]
 
 dependencies = [
-    ('Python', '3.11.5'),
-    ('SciPy-bundle', '2023.11'),
-    ('Boost.MPI', '1.83.0'),
+    ('Python', '3.13.1'),
+    ('SciPy-bundle', '2025.06'),
+    ('Boost.MPI', '1.88.0'),
     ('HeFFTe', '2.4.1'),
-    ('Mesa', '23.1.9'),
-    ('GSL', '2.7'),
-    ('IPython', '8.17.2'),
-    ('Pint', '0.24'),
-    ('HDF5', '1.14.3'),
-    ('h5py', '3.11.0'),
-    ('VTK', '9.3.0'),
+    ('Mesa', '25.1.3'),
+    ('GSL', '2.8'),
+    ('IPython', '9.3.0'),
+    ('Pint', '0.24.4'),
+    ('HDF5', '1.14.6'),
+    ('h5py', '3.14.0'),
+#    ('VTK', '9.5.0'),
 ]
 
 sources = [
@@ -50,11 +50,6 @@ sources = [
     'source_urls': ['https://github.com/ECP-copa/Cabana/archive/'],
     'filename': 'Cabana-e76c1a1.tar.gz',
     'download_filename': 'e76c1a1.tar.gz',
-},
-{
-    'source_urls': ['https://github.com/highfive-devs/highfive/archive/'],
-    'filename': 'highfive-3.2.0.tar.gz',
-    'download_filename': 'v3.2.0.tar.gz',
 },
 ]
 if any(x[0] == 'HDF5' for x in dependencies):

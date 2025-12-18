@@ -109,8 +109,11 @@ class EB_ESPResSo(CMakeNinja):
         if get_cpu_architecture() == X86_64 and 'avx2' in cpu_features:
             configopts += ' -DESPRESSO_BUILD_WITH_WALBERLA_AVX=ON'
 
-        configopts += ' -DESPRESSO_BUILD_WITH_SHARED_MEMORY_PARALLELISM=OFF'
+        configopts += ' -DESPRESSO_BUILD_WITH_SHARED_MEMORY_PARALLELISM=ON'
         configopts += ' -DESPRESSO_BUILD_WITH_FFTW=ON'
+        configopts += ' -DESPRESSO_BUILD_WITH_PYTHON=ON'
+        configopts += ' -DESPRESSO_BUILD_WITH_SCAFACOS=OFF'
+        configopts += ' -DESPRESSO_BUILD_WITH_STOKESIAN_DYNAMICS=OFF'
 
         self.cfg['configopts'] = configopts
 

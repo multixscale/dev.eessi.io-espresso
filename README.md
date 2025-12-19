@@ -14,10 +14,10 @@ source /cvmfs/software.eessi.io/versions/2025.06/init/bash
 module load EasyBuild/5.1.2
 eb easyconfigs/ESPResSo-foss-2025a-software-commit.eb \
    --include-easyblocks=easyconfigs/e/ESPResSo/espresso.py \
-   --software-commit=11393df --max-parallel $(nproc)
+   --software-commit=dfda2d8 --max-parallel $(nproc)
 module use ~/.local/easybuild/modules/all
 module spider ESPResSo
-module load ESPResSo/11393df-foss-2025a
+module load ESPResSo/dfda2d8-foss-2025a
 ```
 
 ### Build missing dependencies locally
@@ -32,8 +32,8 @@ module use ~/.local/easybuild/modules/all
 module spider Boost.MPI
 eb easyconfigs/ESPResSo-foss-2025a-software-commit.eb \
    --include-easyblocks=easyconfigs/e/ESPResSo/espresso.py \
-   --software-commit=11393df --max-parallel $(nproc)
-module load ESPResSo/11393df-foss-2025a
+   --software-commit=dfda2d8 --max-parallel $(nproc)
+module load ESPResSo/dfda2d8-foss-2025a
 python -c 'import numpy, espressomd;print(f"numpy {numpy.__version__}, ESPResSo {espressomd.__version__}")'
 ```
 

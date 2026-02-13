@@ -1,5 +1,5 @@
 #
-# Copyright 2025 Jean-Noël Grad
+# Copyright 2025-2026 Jean-Noël Grad
 #
 # This code is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,13 +23,14 @@ EasyBuild support for ESPResSo, implemented as an easyblock.
 
 import os
 import re
-import shutil
 from easybuild.easyblocks.generic.cmakeninja import CMakeNinja
 from easybuild.tools.systemtools import get_cpu_architecture, get_cpu_features
 from easybuild.tools.systemtools import X86_64
 from easybuild.tools.utilities import trace_msg
 from easybuild.tools.build_log import print_error
+from easybuild.tools.filetools import remove_file, remove_dir
 from easybuild.tools import environment as env
+from easybuild.tools import LooseVersion
 
 
 class EB_ESPResSo(CMakeNinja):
@@ -80,48 +81,81 @@ class EB_ESPResSo(CMakeNinja):
         with open(cmakelists_path, 'w') as f:
             f.write(content)
 
-    def configure_step(self):
-        # patch FetchContent to avoid re-downloading dependencies
-        self._patch_fetchcontent()
+    def _get_version(self):
+        if '.' in self.version:
+            version = tuple(LooseVersion(self.version).version)
+        else:
+            version = 'commit'
+        return version
 
+    def _configure_step_release_420(self):
         configopts = self.cfg.get('configopts', '')
-        dependencies = self.cfg.get('dependencies', [])
+        dependencies = self.cfg.dependencies()
+        dependencies_names = set(x.get('name', '') for x in dependencies)
+
+        def cmake_if_has(name):
+            return 'ON' if name in dependencies_names else 'OFF'
+
+        configopts += f' -DWITH_CUDA={cmake_if_has("CUDA")}'
+        configopts += f' -DWITH_GSL={cmake_if_has("GSL")}'
+        configopts += ' -DWITH_FFTW=ON'
+        configopts += ' -DWITH_PYTHON=ON'
+        configopts += ' -DWITH_SCAFACOS=OFF'
+        configopts += ' -DWITH_STOKESIAN_DYNAMICS=OFF'
+        configopts += ' -DWITH_TESTS=ON'
+
+        self.cfg['configopts'] = configopts
+
+    def _configure_step_release_500(self):
+        configopts = self.cfg.get('configopts', '')
+        dependencies = self.cfg.dependencies()
+        dependencies_names = set(x.get('name', '') for x in dependencies)
+
+        def cmake_if_has(name):
+            return 'ON' if name in dependencies_names else 'OFF'
 
         cpu_features = get_cpu_features()
-        with_cuda = any(x.get('name', '') == 'CUDA' for x in dependencies)
-        with_hdf5 = any(x.get('name', '') == 'HDF5' for x in dependencies)
-        with_gsl = any(x.get('name', '') == 'GSL' for x in dependencies)
 
-        if with_cuda:
-            configopts += ' -DESPRESSO_BUILD_WITH_CUDA=ON'
-        else:
-            configopts += ' -DESPRESSO_BUILD_WITH_CUDA=OFF'
-        if with_hdf5:
-            configopts += ' -DESPRESSO_BUILD_WITH_HDF5=ON'
-        else:
-            configopts += ' -DESPRESSO_BUILD_WITH_HDF5=OFF'
-        if with_gsl:
-            configopts += ' -DESPRESSO_BUILD_WITH_GSL=ON'
-        else:
-            configopts += ' -DESPRESSO_BUILD_WITH_GSL=OFF'
-
+        configopts += f' -DESPRESSO_BUILD_WITH_CUDA={cmake_if_has("CUDA")}'
+        configopts += f' -DESPRESSO_BUILD_WITH_HDF5={cmake_if_has("HDF5")}'
+        configopts += f' -DESPRESSO_BUILD_WITH_GSL={cmake_if_has("GSL")}'
+        configopts += f' -DESPRESSO_BUILD_WITH_NLOPT={cmake_if_has("NLopt")}'
+        configopts += ' -DESPRESSO_BUILD_WITH_SHARED_MEMORY_PARALLELISM=ON'
         configopts += ' -DESPRESSO_BUILD_WITH_WALBERLA=ON'
         if get_cpu_architecture() == X86_64 and 'avx2' in cpu_features:
             configopts += ' -DESPRESSO_BUILD_WITH_WALBERLA_AVX=ON'
-
-        configopts += ' -DESPRESSO_BUILD_WITH_SHARED_MEMORY_PARALLELISM=ON'
         configopts += ' -DESPRESSO_BUILD_WITH_FFTW=ON'
         configopts += ' -DESPRESSO_BUILD_WITH_PYTHON=ON'
         configopts += ' -DESPRESSO_BUILD_WITH_SCAFACOS=OFF'
         configopts += ' -DESPRESSO_BUILD_WITH_STOKESIAN_DYNAMICS=OFF'
+        configopts += ' -DESPRESSO_BUILD_TESTS=ON '
 
         self.cfg['configopts'] = configopts
 
+    def configure_step(self):
+        # patch FetchContent to avoid re-downloading dependencies
+        self._patch_fetchcontent()
+
+        version = self._get_version()
+        if version == 'commit':
+            self._configure_step_release_500()
+        elif version[:2] >= (5, 0):
+            self._configure_step_release_500()
+        elif version[:2] >= (4, 2):
+            self._configure_step_release_420()
+        else:
+            raise NotImplementedError(f'EasyBlock {self.__class__.__name__} doesn\'t implement the configure step for ESPResSo {self.version}')
+
         return super(EB_ESPResSo, self).configure_step()
 
+
     def test_step(self):
-        testopts = self.cfg.get('testopts', '')
-        self.cfg['testopts'] = f'{testopts} -j{self.cfg.parallel}'
+        version = self._get_version()
+        if version == 'commit' or version[:2] >= (5, 0):
+            testopts = self.cfg.get('testopts', '')
+            testopts += f' -j{self.cfg.parallel}'
+            testopts += f' --resource-spec-file {self.builddir}/easybuild_obj/testsuite/python/resources.json'
+            self.cfg['testopts'] = testopts
 
         return super(EB_ESPResSo, self).test_step()
 
@@ -133,23 +167,25 @@ class EB_ESPResSo(CMakeNinja):
         def delete_dir(path):
             if os.path.isdir(path):
                 trace_msg(f'removing directory \'%s\'' % path.replace(f'{self.installdir}/', ''))
-                shutil.rmtree(path)
+                remove_dir(path)
 
         def delete_file(path):
             if os.path.isfile(path) or os.path.islink(path):
                 trace_msg(f'removing file \'%s\'' % path.replace(f'{self.installdir}/', ''))
-                os.remove(path)
+                remove_file(path)
 
-        lib_dir = f'{self.installdir}/lib'
-        if os.path.isdir(f'{self.installdir}/lib64'):
-            lib_dir = f'{self.installdir}/lib64'
-        delete_dir(f'{self.installdir}/include')
-        delete_dir(f'{self.installdir}/share')
-        delete_dir(f'{self.installdir}/walberla')
-        delete_dir(f'{lib_dir}/cmake')
-        for path in os.listdir(lib_dir):
-            if '.so' in path:
-                delete_file(f'{lib_dir}/{path}')
+        version = self._get_version()
+        if version == 'commit' or version[:2] >= (5, 0):
+            lib_dir = f'{self.installdir}/lib'
+            if os.path.isdir(f'{self.installdir}/lib64'):
+                lib_dir = f'{self.installdir}/lib64'
+            delete_dir(f'{self.installdir}/include')
+            delete_dir(f'{self.installdir}/share')
+            delete_dir(f'{self.installdir}/walberla')
+            delete_dir(f'{lib_dir}/cmake')
+            for path in os.listdir(lib_dir):
+                if '.so' in path:
+                    delete_file(f'{lib_dir}/{path}')
 
     def post_processing_step(self):
         try:

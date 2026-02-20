@@ -1,0 +1,5 @@
+easyconfigs:
+  - ESPResSo-foss-2025a-software-commit.eb:
+      options:
+        software-commit: 95f275aa2060714e5d5b6c36e39fd4a9b422eacf
+        include-easyblocks-from-commit: df5875c8e6cca79bfc7e041d4417496c05df210a

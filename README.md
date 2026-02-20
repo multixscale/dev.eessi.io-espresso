@@ -11,29 +11,29 @@ See [our wiki](https://github.com/multixscale/dev.eessi.io-espresso/wiki).
 
 ```sh
 source /cvmfs/software.eessi.io/versions/2025.06/init/bash
-module load EasyBuild/5.1.2
+module load EasyBuild/5.2.0
 eb easyconfigs/ESPResSo-foss-2025a-software-commit.eb \
-   --include-easyblocks=easyconfigs/e/ESPResSo/espresso.py \
-   --software-commit=dfda2d8 --max-parallel $(nproc)
+   --include-easyblocks-from-commit=df5875c8e6cca79bfc7e041d4417496c05df210a \
+   --software-commit=95f275a --max-parallel $(nproc)
 module use ~/.local/easybuild/modules/all
 module spider ESPResSo
-module load ESPResSo/dfda2d8-foss-2025a
+module load ESPResSo/95f275a-foss-2025a
 ```
 
 ### Build missing dependencies locally
 
 ```sh
 source /cvmfs/software.eessi.io/versions/2025.06/init/bash
-module load EasyBuild/5.1.2
+module load EasyBuild/5.2.0
 eb easybuild/easyconfigs/b/Boost.MPI/Boost.MPI-1.88.0-gompi-2025a.eb \
    --dump-test-report=Boost.MPI-1.88.0-gompi-2025a_$(date "+%Y%m%d").md \
    --robot --max-parallel $(nproc)
 module use ~/.local/easybuild/modules/all
 module spider Boost.MPI
 eb easyconfigs/ESPResSo-foss-2025a-software-commit.eb \
-   --include-easyblocks=easyconfigs/e/ESPResSo/espresso.py \
-   --software-commit=dfda2d8 --max-parallel $(nproc)
-module load ESPResSo/dfda2d8-foss-2025a
+   --include-easyblocks-from-commit=df5875c8e6cca79bfc7e041d4417496c05df210a \
+   --software-commit=95f275a --max-parallel $(nproc)
+module load ESPResSo/95f275a-foss-2025a
 python -c 'import numpy, espressomd;print(f"numpy {numpy.__version__}, ESPResSo {espressomd.__version__}")'
 ```
 
@@ -75,3 +75,10 @@ python -c 'import numpy, espressomd;print(f"numpy {numpy.__version__}, ESPResSo 
 - make sure that GCC and other modules are *not* loaded!
 - make sure you are *not* in a Python environment!
 - run `eb easyconfigs/ESPResSo-foss-2025a-software-commit.eb`
+
+# Debugging
+
+- add `configopts += ' -DMPIEXEC_PREFLAGS="--mca;vader;^btl,tcp,uct,ucx,smcuda,self;--mca;btl_base_verbose;40;--mca;mpi_cuda_support;0;--mca;mpi_abort_print_stack;enabled" -D CMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-O0 -g" '` to build in debug mode, activate stack traces on `MPI_Abort()`, disable MPI CUDA support, and choose a different transport mechanism
+- add `runtest = '-V -L "unit_test"'` to display shell commands invoked by CTest
+- module load GDB
+- extract the unit test commands from the logfile and replace MPI option `-n 2` by `-n 2 xterm -fa 'Monospace' -fs 12 -e gdb --args` to run the test in an interactive GDB window (without `xterm`, the GDB might not start in interactive mode)

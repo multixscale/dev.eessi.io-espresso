@@ -10,30 +10,38 @@ See [our wiki](https://github.com/multixscale/dev.eessi.io-espresso/wiki).
 ## Run workflow locally
 
 ```sh
+export EASYBUILD_PREFIX="$(mktemp -d -t easybuild25-XXXXXX)"
+export EESSI_USER_INSTALL=${EASYBUILD_PREFIX}/eessi-install
+export WORKING_DIR=${EASYBUILD_PREFIX}/eessi-workdir
 source /cvmfs/software.eessi.io/versions/2025.06/init/bash
-module load EasyBuild/5.2.0
+module load EasyBuild/5.4.0
+module load EESSI-extend/${EESSI_VERSION}-easybuild
+mkdir -p "${EESSI_USER_INSTALL}"
 eb easyconfigs/ESPResSo-foss-2025a-software-commit.eb \
-   --include-easyblocks-from-commit=df5875c8e6cca79bfc7e041d4417496c05df210a \
-   --software-commit=95f275a --max-parallel $(nproc)
-module use ~/.local/easybuild/modules/all
+   --include-easyblocks-from-pr=4207 \
+   --software-commit=cd7547c --max-parallel $(nproc)
+module use "${EASYBUILD_PREFIX:-$HOME/.local/easybuild/modules/all}"
 module spider ESPResSo
-module load ESPResSo/95f275a-foss-2025a
+module load ESPResSo/cd7547c-foss-2025a
+rm -r "${EASYBUILD_PREFIX}"
 ```
 
 ### Build missing dependencies locally
 
 ```sh
 source /cvmfs/software.eessi.io/versions/2025.06/init/bash
-module load EasyBuild/5.2.0
+module load EasyBuild/5.4.0
+module load EESSI-extend/${EESSI_VERSION}-easybuild
+mkdir -p "${EESSI_USER_INSTALL}"
 eb easybuild/easyconfigs/b/Boost.MPI/Boost.MPI-1.88.0-gompi-2025a.eb \
    --dump-test-report=Boost.MPI-1.88.0-gompi-2025a_$(date "+%Y%m%d").md \
    --robot --max-parallel $(nproc)
-module use ~/.local/easybuild/modules/all
+module use "${EASYBUILD_PREFIX:-$HOME/.local/easybuild/modules/all}"
 module spider Boost.MPI
 eb easyconfigs/ESPResSo-foss-2025a-software-commit.eb \
-   --include-easyblocks-from-commit=df5875c8e6cca79bfc7e041d4417496c05df210a \
-   --software-commit=95f275a --max-parallel $(nproc)
-module load ESPResSo/95f275a-foss-2025a
+   --include-easyblocks-from-pr=4207 \
+   --software-commit=cd7547c --max-parallel $(nproc)
+module load ESPResSo/cd7547c-foss-2025a
 python -c 'import numpy, espressomd;print(f"numpy {numpy.__version__}, ESPResSo {espressomd.__version__}")'
 ```
 

@@ -64,7 +64,7 @@ python -c 'import numpy, espressomd;print(f"numpy {numpy.__version__}, ESPResSo 
 - select the software layer version that ships the selected toolchain version
   (see [EESSI versions](https://www.eessi.io/docs/repositories/versions/)),
   and create the corresponding easystack file with the updated EasyBuild version, e.g.
-  `cp easystacks/software.eessi.io/2023.06/espresso-eb-5.1.0-dev.yml easystacks/software.eessi.io/2025.06/espresso-eb-5.1.2-dev.yml`
+  `cp easystacks/espresso/2023.06/espresso-eb-5.2.0-dev.yml easystacks/espresso/2025.06/espresso-eb-5.4.0-dev.yml`
 - lookup GCC version for that toolchain version
   ([toolchain list](https://docs.easybuild.io/common-toolchains/#common_toolchains_overview))
 - for each ESPResSo dependency, find the dependency version that matches
